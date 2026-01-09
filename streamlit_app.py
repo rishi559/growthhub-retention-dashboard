@@ -14,97 +14,41 @@ st.set_page_config(
 
 # Professional color palette
 COLORS = {
-    'primary': '#0066CC',      # Professional blue
-    'secondary': '#00B8A9',    # Teal accent
-    'success': '#10B981',      # Green for positive metrics
-    'warning': '#F59E0B',      # Amber for warnings
-    'danger': '#EF4444',       # Red for churn/risk
-    'neutral': '#6B7280',      # Gray for neutral data
-    'background': '#FFFFFF',   # White background
-    'card_bg': '#F9FAFB',      # Light gray for cards
-    'dark': '#111827'          # Dark text
+    'primary': '#0066CC',
+    'secondary': '#00B8A9',
+    'success': '#10B981',
+    'warning': '#F59E0B',
+    'danger': '#EF4444',
+    'neutral': '#6B7280',
 }
 
-# Custom CSS for professional white theme
+# Minimal custom CSS
 st.markdown(f"""
     <style>
-    /* Force white background */
-    .main {{
-        background-color: {COLORS['background']};
-    }}
-    
-    /* Main header styling */
     .main-header {{
         font-size: 2.5rem;
         font-weight: 700;
         color: {COLORS['primary']};
         margin-bottom: 0.5rem;
-        letter-spacing: -0.5px;
     }}
     
-    /* Metric cards with light background */
-    .metric-card {{
-        background: {COLORS['card_bg']};
-        padding: 1.2rem;
-        border-radius: 12px;
-        border-left: 4px solid {COLORS['primary']};
-        margin: 0.5rem 0;
-    }}
-    
-    /* Light sidebar styling */
-    [data-testid="stSidebar"] {{
-        background-color: {COLORS['card_bg']};
-    }}
-    
-    [data-testid="stSidebar"] * {{
-        color: {COLORS['dark']} !important;
-    }}
-    
-    /* Improve metric appearance */
     [data-testid="stMetricValue"] {{
         font-size: 2rem;
         font-weight: 700;
         color: {COLORS['primary']};
     }}
     
-    /* Style dataframes */
-    .dataframe {{
-        border-radius: 8px;
-        overflow: hidden;
-    }}
-    
-    /* Button styling */
     .stButton>button {{
         background-color: {COLORS['primary']};
         color: white;
         border-radius: 8px;
-        border: none;
         padding: 0.5rem 2rem;
         font-weight: 600;
-        transition: all 0.3s;
+        border: none;
     }}
     
     .stButton>button:hover {{
         background-color: {COLORS['secondary']};
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
-    }}
-    
-    /* White background for charts */
-    .js-plotly-plot {{
-        background-color: white !important;
-    }}
-    
-    /* Section headers */
-    h3 {{
-        color: {COLORS['dark']};
-        font-weight: 600;
-    }}
-    
-    /* Info boxes */
-    .stAlert {{
-        background-color: {COLORS['card_bg']};
-        border-radius: 8px;
     }}
     </style>
 """, unsafe_allow_html=True)
