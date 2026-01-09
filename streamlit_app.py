@@ -20,13 +20,19 @@ COLORS = {
     'warning': '#F59E0B',      # Amber for warnings
     'danger': '#EF4444',       # Red for churn/risk
     'neutral': '#6B7280',      # Gray for neutral data
-    'background': '#F9FAFB',   # Light background
-    'dark': '#1F2937'          # Dark text
+    'background': '#FFFFFF',   # White background
+    'card_bg': '#F9FAFB',      # Light gray for cards
+    'dark': '#111827'          # Dark text
 }
 
-# Custom CSS for professional styling
+# Custom CSS for professional white theme
 st.markdown(f"""
     <style>
+    /* Force white background */
+    .main {{
+        background-color: {COLORS['background']};
+    }}
+    
     /* Main header styling */
     .main-header {{
         font-size: 2.5rem;
@@ -36,22 +42,22 @@ st.markdown(f"""
         letter-spacing: -0.5px;
     }}
     
-    /* Metric cards */
+    /* Metric cards with light background */
     .metric-card {{
-        background: linear-gradient(135deg, {COLORS['primary']}15 0%, {COLORS['secondary']}15 100%);
+        background: {COLORS['card_bg']};
         padding: 1.2rem;
         border-radius: 12px;
         border-left: 4px solid {COLORS['primary']};
         margin: 0.5rem 0;
     }}
     
-    /* Sidebar styling */
+    /* Light sidebar styling */
     [data-testid="stSidebar"] {{
-        background-color: {COLORS['dark']};
+        background-color: {COLORS['card_bg']};
     }}
     
-    [data-testid="stSidebar"] .css-1d391kg {{
-        color: white;
+    [data-testid="stSidebar"] * {{
+        color: {COLORS['dark']} !important;
     }}
     
     /* Improve metric appearance */
@@ -82,6 +88,23 @@ st.markdown(f"""
         background-color: {COLORS['secondary']};
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+    }}
+    
+    /* White background for charts */
+    .js-plotly-plot {{
+        background-color: white !important;
+    }}
+    
+    /* Section headers */
+    h3 {{
+        color: {COLORS['dark']};
+        font-weight: 600;
+    }}
+    
+    /* Info boxes */
+    .stAlert {{
+        background-color: {COLORS['card_bg']};
+        border-radius: 8px;
     }}
     </style>
 """, unsafe_allow_html=True)
@@ -318,8 +341,10 @@ if page == "📊 Overview":
         fig.update_layout(
             height=300, 
             showlegend=False,
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='white',
+            paper_bgcolor='white',
+            xaxis=dict(showgrid=False),
+            yaxis=dict(showgrid=True, gridcolor='#E5E7EB')
         )
         fig.update_traces(marker_line_width=0)
         st.plotly_chart(fig, use_container_width=True)
@@ -340,8 +365,8 @@ if page == "📊 Overview":
                      color_discrete_sequence=colors_list)
         fig.update_layout(
             height=300,
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='white',
+            paper_bgcolor='white',
         )
         fig.update_traces(textposition='inside', textinfo='percent+label')
         st.plotly_chart(fig, use_container_width=True)
@@ -361,8 +386,8 @@ if page == "📊 Overview":
         fig.update_layout(
             height=300, 
             showlegend=False,
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='white',
+            paper_bgcolor='white',
         )
         fig.update_traces(marker_line_width=0)
         st.plotly_chart(fig, use_container_width=True)
@@ -385,8 +410,8 @@ if page == "📊 Overview":
             xaxis_title="Retention Rate (%)", 
             yaxis_title="", 
             height=300,
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='white',
+            paper_bgcolor='white',
         )
         st.plotly_chart(fig, use_container_width=True)
 
@@ -448,8 +473,8 @@ elif page == "🔄 Cohort Analysis":
         xaxis_title="Months Since Signup",
         yaxis_title="Signup Cohort",
         height=600,
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='white',
+        paper_bgcolor='white',
     )
     
     st.plotly_chart(fig, use_container_width=True)
@@ -475,8 +500,8 @@ elif page == "🔄 Cohort Analysis":
         yaxis_title="Average Retention Rate (%)",
         height=400,
         yaxis_range=[0, 105],
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='white',
+        paper_bgcolor='white',
     )
     
     st.plotly_chart(fig, use_container_width=True)
@@ -521,8 +546,8 @@ elif page == "⚠️ Churn Risk":
             fig.update_layout(
                 height=350, 
                 showlegend=False,
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='white',
+                paper_bgcolor='white',
             )
             fig.update_traces(marker_line_width=0)
             st.plotly_chart(fig, use_container_width=True)
@@ -539,8 +564,8 @@ elif page == "⚠️ Churn Risk":
             fig.update_layout(
                 height=350, 
                 showlegend=False,
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='white',
+                paper_bgcolor='white',
             )
             fig.update_traces(marker_line_width=0)
             st.plotly_chart(fig, use_container_width=True)
@@ -606,8 +631,8 @@ elif page == "💎 Customer Segments":
         fig.update_layout(
             height=350, 
             showlegend=False,
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='white',
+            paper_bgcolor='white',
         )
         fig.update_traces(marker_line_width=0)
         st.plotly_chart(fig, use_container_width=True)
@@ -622,8 +647,8 @@ elif page == "💎 Customer Segments":
         fig.update_layout(
             height=350, 
             showlegend=False,
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='white',
+            paper_bgcolor='white',
         )
         fig.update_traces(marker_line_width=0)
         st.plotly_chart(fig, use_container_width=True)
@@ -648,8 +673,8 @@ elif page == "💎 Customer Segments":
                      color_discrete_sequence=colors_list)
         fig.update_layout(
             height=350,
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='white',
+            paper_bgcolor='white',
         )
         fig.update_traces(textposition='inside', textinfo='percent+label')
         st.plotly_chart(fig, use_container_width=True)
@@ -664,8 +689,8 @@ elif page == "💎 Customer Segments":
         fig.update_layout(
             height=350, 
             showlegend=False,
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='white',
+            paper_bgcolor='white',
         )
         fig.update_traces(marker_line_width=0)
         st.plotly_chart(fig, use_container_width=True)
@@ -695,8 +720,8 @@ elif page == "📈 Plan Comparison":
                      color_discrete_sequence=[COLORS['danger']])
         fig.update_layout(
             height=350,
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='white',
+            paper_bgcolor='white',
         )
         fig.update_traces(marker_line_width=0)
         st.plotly_chart(fig, use_container_width=True)
@@ -710,8 +735,8 @@ elif page == "📈 Plan Comparison":
                      color_discrete_sequence=[COLORS['success']])
         fig.update_layout(
             height=350,
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='white',
+            paper_bgcolor='white',
         )
         fig.update_traces(marker_line_width=0)
         st.plotly_chart(fig, use_container_width=True)
@@ -757,8 +782,8 @@ elif page == "📈 Plan Comparison":
         yaxis_title="Retention Rate (%)",
         height=500,
         yaxis_range=[0, 105],
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='white',
+        paper_bgcolor='white',
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )
     
