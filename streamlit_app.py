@@ -8,24 +8,81 @@ from datetime import datetime, timedelta
 st.set_page_config(
     page_title="GrowthHub Retention Analytics",
     page_icon="📊",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling
-st.markdown("""
+# Professional color palette
+COLORS = {
+    'primary': '#0066CC',      # Professional blue
+    'secondary': '#00B8A9',    # Teal accent
+    'success': '#10B981',      # Green for positive metrics
+    'warning': '#F59E0B',      # Amber for warnings
+    'danger': '#EF4444',       # Red for churn/risk
+    'neutral': '#6B7280',      # Gray for neutral data
+    'background': '#F9FAFB',   # Light background
+    'dark': '#1F2937'          # Dark text
+}
+
+# Custom CSS for professional styling
+st.markdown(f"""
     <style>
-    .main-header {
+    /* Main header styling */
+    .main-header {{
         font-size: 2.5rem;
-        font-weight: bold;
-        color: #1f77b4;
+        font-weight: 700;
+        color: {COLORS['primary']};
         margin-bottom: 0.5rem;
-    }
-    .metric-card {
-        background-color: #f0f2f6;
-        padding: 1rem;
-        border-radius: 0.5rem;
+        letter-spacing: -0.5px;
+    }}
+    
+    /* Metric cards */
+    .metric-card {{
+        background: linear-gradient(135deg, {COLORS['primary']}15 0%, {COLORS['secondary']}15 100%);
+        padding: 1.2rem;
+        border-radius: 12px;
+        border-left: 4px solid {COLORS['primary']};
         margin: 0.5rem 0;
-    }
+    }}
+    
+    /* Sidebar styling */
+    [data-testid="stSidebar"] {{
+        background-color: {COLORS['dark']};
+    }}
+    
+    [data-testid="stSidebar"] .css-1d391kg {{
+        color: white;
+    }}
+    
+    /* Improve metric appearance */
+    [data-testid="stMetricValue"] {{
+        font-size: 2rem;
+        font-weight: 700;
+        color: {COLORS['primary']};
+    }}
+    
+    /* Style dataframes */
+    .dataframe {{
+        border-radius: 8px;
+        overflow: hidden;
+    }}
+    
+    /* Button styling */
+    .stButton>button {{
+        background-color: {COLORS['primary']};
+        color: white;
+        border-radius: 8px;
+        border: none;
+        padding: 0.5rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s;
+    }}
+    
+    .stButton>button:hover {{
+        background-color: {COLORS['secondary']};
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+    }}
     </style>
 """, unsafe_allow_html=True)
 
@@ -257,17 +314,36 @@ if page == "📊 Overview":
         
         fig = px.bar(monthly, x='month', y='signups', 
                      labels={'month': 'Month', 'signups': 'Signups'},
-                     color_discrete_sequence=['#1f77b4'])
-        fig.update_layout(height=300, showlegend=False)
+                     color_discrete_sequence=[COLORS['primary']])
+        fig.update_layout(
+            height=300, 
+            showlegend=False,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+        )
+        fig.update_traces(marker_line_width=0)
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
         st.subheader("Plan Distribution")
         plan_counts = filtered_df['plan'].value_counts()
         
+        plan_colors = {
+            'Free': COLORS['neutral'],
+            'Starter': COLORS['secondary'],
+            'Professional': COLORS['warning'],
+            'Enterprise': COLORS['danger']
+        }
+        colors_list = [plan_colors.get(plan, COLORS['primary']) for plan in plan_counts.index]
+        
         fig = px.pie(values=plan_counts.values, names=plan_counts.index,
-                     color_discrete_sequence=['#1f77b4', '#2ca02c', '#ff7f0e', '#d62728'])
-        fig.update_layout(height=300)
+                     color_discrete_sequence=colors_list)
+        fig.update_layout(
+            height=300,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+        )
+        fig.update_traces(textposition='inside', textinfo='percent+label')
         st.plotly_chart(fig, use_container_width=True)
     
     st.markdown("---")
@@ -281,8 +357,14 @@ if page == "📊 Overview":
         
         fig = px.bar(x=mrr_by_plan.values, y=mrr_by_plan.index, orientation='h',
                      labels={'x': 'MRR ($)', 'y': 'Plan'},
-                     color_discrete_sequence=['#1f77b4'])
-        fig.update_layout(height=300, showlegend=False)
+                     color_discrete_sequence=[COLORS['success']])
+        fig.update_layout(
+            height=300, 
+            showlegend=False,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+        )
+        fig.update_traces(marker_line_width=0)
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
@@ -296,9 +378,16 @@ if page == "📊 Overview":
         
         fig = go.Figure(data=[
             go.Bar(x=list(milestones.values()), y=list(milestones.keys()), orientation='h',
-                   marker_color='#2ca02c')
+                   marker_color=COLORS['secondary'],
+                   marker_line_width=0)
         ])
-        fig.update_layout(xaxis_title="Retention Rate (%)", yaxis_title="", height=300)
+        fig.update_layout(
+            xaxis_title="Retention Rate (%)", 
+            yaxis_title="", 
+            height=300,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+        )
         st.plotly_chart(fig, use_container_width=True)
 
 elif page == "🔄 Cohort Analysis":
@@ -347,7 +436,7 @@ elif page == "🔄 Cohort Analysis":
         z=retention_matrix,
         x=month_labels,
         y=cohort_labels,
-        colorscale='RdYlGn',
+        colorscale=[[0, COLORS['danger']], [0.5, COLORS['warning']], [1, COLORS['success']]],
         text=np.round(retention_matrix, 1),
         texttemplate='%{text}%',
         textfont={"size": 10},
@@ -358,7 +447,9 @@ elif page == "🔄 Cohort Analysis":
         title="Cohort Retention Rate by Month",
         xaxis_title="Months Since Signup",
         yaxis_title="Signup Cohort",
-        height=600
+        height=600,
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
     )
     
     st.plotly_chart(fig, use_container_width=True)
@@ -373,15 +464,19 @@ elif page == "🔄 Cohort Analysis":
         x=list(range(len(avg_retention))),
         y=avg_retention.values,
         mode='lines+markers',
-        line=dict(color='#1f77b4', width=3),
-        marker=dict(size=8)
+        line=dict(color=COLORS['primary'], width=3),
+        marker=dict(size=8, color=COLORS['primary']),
+        fill='tozeroy',
+        fillcolor=f"rgba(0, 102, 204, 0.1)"
     ))
     
     fig.update_layout(
         xaxis_title="Months Since Signup",
         yaxis_title="Average Retention Rate (%)",
         height=400,
-        yaxis_range=[0, 105]
+        yaxis_range=[0, 105],
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
     )
     
     st.plotly_chart(fig, use_container_width=True)
@@ -416,26 +511,38 @@ elif page == "⚠️ Churn Risk":
         with col1:
             st.subheader("Risk Distribution")
             risk_counts = active_df['risk_level'].value_counts()
-            colors = {'High': '#d62728', 'Medium': '#ff7f0e', 'Low': '#2ca02c'}
-            color_list = [colors.get(x, '#1f77b4') for x in risk_counts.index]
+            risk_colors_map = {'High': COLORS['danger'], 'Medium': COLORS['warning'], 'Low': COLORS['success']}
+            color_list = [risk_colors_map.get(x, COLORS['primary']) for x in risk_counts.index]
             
             fig = px.bar(x=risk_counts.index, y=risk_counts.values,
                          labels={'x': 'Risk Level', 'y': 'Number of Users'},
                          color=risk_counts.index,
-                         color_discrete_map=colors)
-            fig.update_layout(height=350, showlegend=False)
+                         color_discrete_map=risk_colors_map)
+            fig.update_layout(
+                height=350, 
+                showlegend=False,
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+            )
+            fig.update_traces(marker_line_width=0)
             st.plotly_chart(fig, use_container_width=True)
         
         with col2:
             st.subheader("MRR by Risk Level")
             mrr_by_risk = active_df.groupby('risk_level')['mrr'].sum()
-            color_list = [colors.get(x, '#1f77b4') for x in mrr_by_risk.index]
+            color_list = [risk_colors_map.get(x, COLORS['primary']) for x in mrr_by_risk.index]
             
             fig = px.bar(x=mrr_by_risk.index, y=mrr_by_risk.values,
                          labels={'x': 'Risk Level', 'y': 'MRR ($)'},
                          color=mrr_by_risk.index,
-                         color_discrete_map=colors)
-            fig.update_layout(height=350, showlegend=False)
+                         color_discrete_map=risk_colors_map)
+            fig.update_layout(
+                height=350, 
+                showlegend=False,
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
+            )
+            fig.update_traces(marker_line_width=0)
             st.plotly_chart(fig, use_container_width=True)
         
         st.markdown("---")
@@ -495,8 +602,14 @@ elif page == "💎 Customer Segments":
         st.subheader("LTV Distribution")
         fig = px.histogram(filtered_df, x='ltv', nbins=50,
                           labels={'ltv': 'Lifetime Value ($)', 'count': 'Number of Customers'},
-                          color_discrete_sequence=['#1f77b4'])
-        fig.update_layout(height=350, showlegend=False)
+                          color_discrete_sequence=[COLORS['primary']])
+        fig.update_layout(
+            height=350, 
+            showlegend=False,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+        )
+        fig.update_traces(marker_line_width=0)
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
@@ -505,8 +618,14 @@ elif page == "💎 Customer Segments":
         
         fig = px.bar(x=ltv_by_plan.values, y=ltv_by_plan.index, orientation='h',
                      labels={'x': 'Average LTV ($)', 'y': 'Plan'},
-                     color_discrete_sequence=['#1f77b4'])
-        fig.update_layout(height=350, showlegend=False)
+                     color_discrete_sequence=[COLORS['secondary']])
+        fig.update_layout(
+            height=350, 
+            showlegend=False,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+        )
+        fig.update_traces(marker_line_width=0)
         st.plotly_chart(fig, use_container_width=True)
     
     st.markdown("---")
@@ -517,9 +636,22 @@ elif page == "💎 Customer Segments":
         st.subheader("Customer Segments")
         segment_counts = filtered_df['value_segment'].value_counts()
         
+        segment_colors = {
+            'Whale': COLORS['danger'],
+            'High Value': COLORS['warning'],
+            'Medium Value': COLORS['secondary'],
+            'Low Value': COLORS['neutral']
+        }
+        colors_list = [segment_colors.get(seg, COLORS['primary']) for seg in segment_counts.index]
+        
         fig = px.pie(values=segment_counts.values, names=segment_counts.index,
-                     color_discrete_sequence=['#d62728', '#ff7f0e', '#2ca02c', '#1f77b4'])
-        fig.update_layout(height=350)
+                     color_discrete_sequence=colors_list)
+        fig.update_layout(
+            height=350,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+        )
+        fig.update_traces(textposition='inside', textinfo='percent+label')
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
@@ -528,8 +660,14 @@ elif page == "💎 Customer Segments":
         
         fig = px.bar(x=revenue_by_segment.index, y=revenue_by_segment.values,
                      labels={'x': 'Segment', 'y': 'Total LTV ($)'},
-                     color_discrete_sequence=['#1f77b4'])
-        fig.update_layout(height=350, showlegend=False)
+                     color_discrete_sequence=[COLORS['success']])
+        fig.update_layout(
+            height=350, 
+            showlegend=False,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+        )
+        fig.update_traces(marker_line_width=0)
         st.plotly_chart(fig, use_container_width=True)
     
     st.markdown("---")
@@ -554,8 +692,13 @@ elif page == "📈 Plan Comparison":
         
         fig = px.bar(x=churn_by_plan.index, y=churn_by_plan.values,
                      labels={'x': 'Plan', 'y': 'Churn Rate (%)'},
-                     color_discrete_sequence=['#d62728'])
-        fig.update_layout(height=350)
+                     color_discrete_sequence=[COLORS['danger']])
+        fig.update_layout(
+            height=350,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+        )
+        fig.update_traces(marker_line_width=0)
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
@@ -564,8 +707,13 @@ elif page == "📈 Plan Comparison":
         
         fig = px.bar(x=engagement_by_plan.index, y=engagement_by_plan.values,
                      labels={'x': 'Plan', 'y': 'Avg Monthly Logins'},
-                     color_discrete_sequence=['#2ca02c'])
-        fig.update_layout(height=350)
+                     color_discrete_sequence=[COLORS['success']])
+        fig.update_layout(
+            height=350,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+        )
+        fig.update_traces(marker_line_width=0)
         st.plotly_chart(fig, use_container_width=True)
     
     st.markdown("---")
@@ -574,7 +722,12 @@ elif page == "📈 Plan Comparison":
     
     # Calculate retention for each plan
     plans_to_show = ['Free', 'Starter', 'Professional', 'Enterprise']
-    colors_map = {'Free': '#1f77b4', 'Starter': '#2ca02c', 'Professional': '#ff7f0e', 'Enterprise': '#d62728'}
+    plan_colors_map = {
+        'Free': COLORS['neutral'],
+        'Starter': COLORS['secondary'],
+        'Professional': COLORS['warning'],
+        'Enterprise': COLORS['danger']
+    }
     
     fig = go.Figure()
     
@@ -595,7 +748,7 @@ elif page == "📈 Plan Comparison":
             y=retention_rates,
             mode='lines+markers',
             name=plan,
-            line=dict(width=3, color=colors_map.get(plan)),
+            line=dict(width=3, color=plan_colors_map.get(plan)),
             marker=dict(size=6)
         ))
     
@@ -604,6 +757,8 @@ elif page == "📈 Plan Comparison":
         yaxis_title="Retention Rate (%)",
         height=500,
         yaxis_range=[0, 105],
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )
     
